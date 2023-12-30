@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "oeclockdevserver"
+version = "0.1.0"
+description = "Server for OEClock frontend development. Created with FastAPI."
+authors = ["Evgeniy Siskevich <ewginx@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.108.0"}
+
+[tool.poetry.group.test.dependencies]
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
