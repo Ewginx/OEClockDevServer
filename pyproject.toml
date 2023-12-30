@@ -8,6 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = {extras = ["all"], version = "^0.108.0"}
+loguru = "^0.7.2"
+sqlalchemy = "^2.0.24"
 
 [tool.poetry.group.test.dependencies]
 
