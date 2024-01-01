@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from loguru import logger
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from .prepopulate_db import prepopulate_db
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,6 +22,9 @@ def get_db():
         db.close()
 
 
+prepopulate_db(get_db())
+
+
 @app.get("/debug", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/ota", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/sounds", status_code=status.HTTP_301_MOVED_PERMANENTLY)
@@ -30,51 +34,93 @@ def get_db():
 @app.get("/wifi", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/brightness", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/time", status_code=status.HTTP_301_MOVED_PERMANENTLY)
-def time():
+def redirect():
     return RedirectResponse("/")
 
 
-@app.post("/time", status_code=status.HTTP_202_ACCEPTED)
+@app.put("/time", status_code=status.HTTP_202_ACCEPTED)
 async def set_time(time: schemas.SetTimeSchema):
     date = datetime.utcfromtimestamp(time.time / 1000).strftime("%Y-%m-%dT%H:%M:%S")
-    logger.info(f"Get POST request, converted date is (UTC): {date}")
+    logger.info(f"Get put request, converted date is (UTC): {date}")
     return None
 
 
-@app.post("/settings/time", status_code=status.HTTP_200_OK)
-async def setup_time(time_settings: schemas.TimeSchema, db: Session = Depends(get_db)):
-    if updated_time_settings:= crud.update_or_create_time_settings(db=db, time_settings=time_settings):
-        logger.info(f"Time settings updated! New values are {updated_time_settings.timezone_posix} {updated_time_settings.main_screen}")
+@app.put("/settings/time", status_code=status.HTTP_200_OK)
+async def save_time_settings(
+    time_settings: schemas.TimeSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(
+        db=db, settings_scheme=time_settings
+    ):
+        logger.info(
+            f"Time settings updated! New values are {updated_settings.timezone_posix} {updated_settings.digital_main_screen}"
+        )
     return None
 
-@app.post("/settings/weather", status_code=status.HTTP_200_OK)
-async def setup_weather(weather_settings: schemas.WeatherSchema, db: Session = Depends(get_db)):
-    if updated_weather_settings:= crud.update_or_create_weather_settings(db=db, weather_setting=weather_settings):
-        logger.info(f"Weather settings updated! New values are {updated_weather_settings.language} {updated_weather_settings.city}")
+
+@app.put("/settings/weather", status_code=status.HTTP_200_OK)
+async def save_weather_settings(
+    weather_settings: schemas.WeatherSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(
+        db=db, settings_scheme=weather_settings
+    ):
+        logger.info(
+            f"Weather settings updated! New values are {updated_settings.language} {updated_settings.city}"
+        )
     return None
 
-@app.post("/settings/theme", status_code=status.HTTP_200_OK)
-async def setup_theme(theme_settings: schemas.ThemeSchema, db: Session = Depends(get_db)):
-    if updated_theme_settings:= crud.update_or_create_theme_settings(db=db, theme_settings=theme_settings):
-        logger.info(f"Theme settings updated! New values are {updated_theme_settings.dark_theme_enabled} {updated_theme_settings.dark_background_color}")
+
+@app.put("/settings/theme", status_code=status.HTTP_200_OK)
+async def save_theme_settings(
+    theme_settings: schemas.ThemeSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(
+        db=db, settings_scheme=theme_settings
+    ):
+        logger.info(
+            f"Theme settings updated! New values are {updated_settings.dark_theme_enabled} {updated_settings.dark_background_color}"
+        )
     return None
 
-@app.post("/settings/brightness", status_code=status.HTTP_200_OK)
-async def setup_brightness(brightness_settings: schemas.BrightnessSchema, db: Session = Depends(get_db)):
-    if updated_brightness_settings:= crud.update_or_create_brightness_settings(db=db, brightness_settings=brightness_settings):
-        logger.info(f"Brightness settings updated! New values are {updated_brightness_settings.auto_brightness} {updated_brightness_settings.auto_theme_change}")
+
+@app.put("/settings/brightness", status_code=status.HTTP_200_OK)
+async def save_brightness_settings(
+    brightness_settings: schemas.BrightnessSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(
+        db=db, settings_scheme=brightness_settings
+    ):
+        logger.info(
+            f"Brightness settings updated! New values are {updated_settings.auto_brightness} {updated_settings.auto_theme_change}"
+        )
     return None
 
-@app.post("/settings/wifi", status_code=status.HTTP_200_OK)
-async def setup_wifi(wifi_settings: schemas.WifiSchema, db: Session = Depends(get_db)):
-    if updated_wifi_settings:= crud.update_or_create_wifi_settings(db=db, wifi_settings=wifi_settings):
-        logger.info(f"WiFi settings updated! New values are {updated_wifi_settings.ip_address} {updated_wifi_settings.ssid}")
-    return None
 
-@app.get("/settings", status_code=status.HTTP_200_OK)
-async def get_data():
-    data = jsonable_encoder({"password": 1234})
-    return JSONResponse(content=data)
+@app.put("/settings/wifi", status_code=status.HTTP_200_OK)
+async def save_wifi_settings(
+    wifi_settings: schemas.WifiSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(
+        db=db, settings_scheme=wifi_settings
+    ):
+        logger.info(
+            f"WiFi settings updated! New values are {updated_settings.ip_address} {updated_settings.ssid}"
+        )
+
+class MyStatics(StaticFiles):
+
+    def is_not_modified(
+            self, response_headers, request_headers
+    ) -> bool:
+        return False
+
+@app.get(
+    "/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema
+)
+async def get_settings(db: Session = Depends(get_db)):
+    serialized_settings  = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
+    return JSONResponse(content=serialized_settings.model_dump_json())
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/", MyStatics(directory="static", html=True), name="static")
