@@ -64,3 +64,9 @@ class SettingsSchema(BaseModel):
     light_second_color: str
     dark_background_color: str
     dark_second_color: str
+
+class WebsocketSchema(BaseModel):
+    temperature: float
+    humidity: int
+    lx: int
+    battery_level: int

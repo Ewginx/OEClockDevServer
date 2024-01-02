@@ -1,7 +1,9 @@
-from fastapi import Depends, FastAPI, status
+from fastapi import Depends, FastAPI, status, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, JSONResponse
 from datetime import datetime
+import asyncio
+import random
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 from loguru import logger
@@ -23,6 +25,23 @@ def get_db():
 
 
 prepopulate_db(get_db())
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            websocket_schema = schemas.WebsocketSchema(
+                temperature=random.uniform(23, 25),
+                humidity=random.randint(40, 67),
+                lx=random.randint(0, 250),
+                battery_level=random.randint(15, 100),
+            )
+            await websocket.send_text(websocket_schema.model_dump_json())
+            await asyncio.sleep(2)
+    except WebSocketDisconnect:
+        logger.info("Client disconnected")
 
 
 @app.get("/debug", status_code=status.HTTP_301_MOVED_PERMANENTLY)
@@ -108,18 +127,19 @@ async def save_wifi_settings(
             f"WiFi settings updated! New values are {updated_settings.ip_address} {updated_settings.ssid}"
         )
 
-class MyStatics(StaticFiles):
 
-    def is_not_modified(
-            self, response_headers, request_headers
-    ) -> bool:
+class MyStatics(StaticFiles):
+    def is_not_modified(self, response_headers, request_headers) -> bool:
         return False
+
 
 @app.get(
     "/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema
 )
 async def get_settings(db: Session = Depends(get_db)):
-    serialized_settings  = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
+    serialized_settings = schemas.SettingsSchema(
+        **crud.get_settings_from_db_as_dict(db)
+    )
     return JSONResponse(content=serialized_settings.model_dump_json())
 
 
