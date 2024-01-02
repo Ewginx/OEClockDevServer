@@ -1,11 +1,12 @@
 from sqlalchemy import Boolean, Column, Integer, String
+
 from .database import Base
 
 
 class Settings(Base):
     __tablename__ = "settings"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)  # noqa
 
     ssid = Column(String, unique=True, index=True)
     password = Column(String)
@@ -33,6 +34,6 @@ class Settings(Base):
     light_second_color = Column(String)
     dark_background_color = Column(String)
     dark_second_color = Column(String)
-    
+
     def as_dict(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

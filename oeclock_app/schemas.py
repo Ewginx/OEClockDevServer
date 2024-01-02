@@ -41,6 +41,7 @@ class ThemeSchema(BaseModel):
     dark_background_color: str
     dark_second_color: str
 
+
 class SettingsSchema(BaseModel):
     ssid: str
     password: str
@@ -64,6 +65,7 @@ class SettingsSchema(BaseModel):
     light_second_color: str
     dark_background_color: str
     dark_second_color: str
+
 
 class WebsocketSchema(BaseModel):
     temperature: float

@@ -1,6 +1,7 @@
+from loguru import logger
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from loguru import logger
+
 from . import models, schemas
 
 
@@ -10,8 +11,10 @@ def create(db=Session, settings_scheme=BaseModel):
     db.commit()
     db.refresh(setting_db)
 
+
 def model_is_empty(db):
     return False if db.query(models.Settings).first() else True
+
 
 def get_filled_schema():
     return schemas.SettingsSchema(

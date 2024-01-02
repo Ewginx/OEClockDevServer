@@ -1,12 +1,13 @@
-from fastapi import Depends, FastAPI, status, WebSocket, WebSocketDisconnect
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse, JSONResponse
-from datetime import datetime
 import asyncio
 import random
-from sqlalchemy.orm import Session
-from fastapi.encoders import jsonable_encoder
+from datetime import datetime
+
+from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect, status
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from loguru import logger
+from sqlalchemy.orm import Session
+
 from . import crud, models, schemas
 from .database import SessionLocal, engine
 from .prepopulate_db import prepopulate_db
@@ -65,15 +66,9 @@ async def set_time(time: schemas.SetTimeSchema):
 
 
 @app.put("/settings/time", status_code=status.HTTP_200_OK)
-async def save_time_settings(
-    time_settings: schemas.TimeSchema, db: Session = Depends(get_db)
-):
-    if updated_settings := crud.update_settings_model(
-        db=db, settings_scheme=time_settings
-    ):
-        logger.info(
-            f"Time settings updated! New values are {updated_settings.timezone_posix} {updated_settings.digital_main_screen}"
-        )
+async def save_time_settings(time_settings: schemas.TimeSchema, db: Session = Depends(get_db)):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=time_settings):
+        logger.info(f"Time settings updated! New values are {updated_settings.timezone_posix}")
     return None
 
 
@@ -81,25 +76,15 @@ async def save_time_settings(
 async def save_weather_settings(
     weather_settings: schemas.WeatherSchema, db: Session = Depends(get_db)
 ):
-    if updated_settings := crud.update_settings_model(
-        db=db, settings_scheme=weather_settings
-    ):
-        logger.info(
-            f"Weather settings updated! New values are {updated_settings.language} {updated_settings.city}"
-        )
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=weather_settings):
+        logger.info(f"Weather settings updated! New values are {updated_settings.language}")
     return None
 
 
 @app.put("/settings/theme", status_code=status.HTTP_200_OK)
-async def save_theme_settings(
-    theme_settings: schemas.ThemeSchema, db: Session = Depends(get_db)
-):
-    if updated_settings := crud.update_settings_model(
-        db=db, settings_scheme=theme_settings
-    ):
-        logger.info(
-            f"Theme settings updated! New values are {updated_settings.dark_theme_enabled} {updated_settings.dark_background_color}"
-        )
+async def save_theme_settings(theme_settings: schemas.ThemeSchema, db: Session = Depends(get_db)):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=theme_settings):
+        logger.info(f"Theme settings updated! New values are {updated_settings.dark_theme_enabled}")
     return None
 
 
@@ -107,25 +92,17 @@ async def save_theme_settings(
 async def save_brightness_settings(
     brightness_settings: schemas.BrightnessSchema, db: Session = Depends(get_db)
 ):
-    if updated_settings := crud.update_settings_model(
-        db=db, settings_scheme=brightness_settings
-    ):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=brightness_settings):
         logger.info(
-            f"Brightness settings updated! New values are {updated_settings.auto_brightness} {updated_settings.auto_theme_change}"
+            f"Brightness settings updated! New values are {updated_settings.auto_brightness}"
         )
     return None
 
 
 @app.put("/settings/wifi", status_code=status.HTTP_200_OK)
-async def save_wifi_settings(
-    wifi_settings: schemas.WifiSchema, db: Session = Depends(get_db)
-):
-    if updated_settings := crud.update_settings_model(
-        db=db, settings_scheme=wifi_settings
-    ):
-        logger.info(
-            f"WiFi settings updated! New values are {updated_settings.ip_address} {updated_settings.ssid}"
-        )
+async def save_wifi_settings(wifi_settings: schemas.WifiSchema, db: Session = Depends(get_db)):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=wifi_settings):
+        logger.info(f"WiFi settings updated! New values are {updated_settings.ip_address}")
 
 
 class MyStatics(StaticFiles):
@@ -133,13 +110,9 @@ class MyStatics(StaticFiles):
         return False
 
 
-@app.get(
-    "/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema
-)
+@app.get("/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema)
 async def get_settings(db: Session = Depends(get_db)):
-    serialized_settings = schemas.SettingsSchema(
-        **crud.get_settings_from_db_as_dict(db)
-    )
+    serialized_settings = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
     return JSONResponse(content=serialized_settings.model_dump_json())
 
 
