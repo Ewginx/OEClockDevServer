@@ -1,20 +1,24 @@
 import asyncio
 import random
 from datetime import datetime
+from typing import Annotated
 
-from fastapi import Depends, FastAPI, WebSocket, WebSocketDisconnect, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
-from .prepopulate_db import prepopulate_db
+from oeclock_app import crud, models, schemas
+from oeclock_app.database import SessionLocal, engine
+from oeclock_app.prepopulate_db import prepopulate_db
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+security = HTTPBasic()
 
 
 def get_db():
@@ -56,6 +60,26 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.get("/time", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 def redirect():
     return RedirectResponse("/")
+
+
+@app.get("/")
+def read_current_user(credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    if credentials.username == "admin" and credentials.password == "admin1234":
+        return FileResponse("static/index.html")
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Incorrect login or password",
+        headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+@app.get("/logout")
+def logout():
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Logged out",
+        headers={"WWW-Authenticate": "Basic"},
+    )
 
 
 @app.put("/time", status_code=status.HTTP_202_ACCEPTED)
