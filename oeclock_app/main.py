@@ -84,7 +84,7 @@ def logout():
 
 @app.put("/time", status_code=status.HTTP_202_ACCEPTED)
 async def set_time(time: schemas.SetTimeSchema):
-    date = datetime.utcfromtimestamp(time.time / 1000).strftime("%Y-%m-%dT%H:%M:%S")
+    date = datetime.utcfromtimestamp(time.time).strftime("%Y-%m-%dT%H:%M:%S")
     logger.info(f"Get put request, converted date is (UTC): {date}")
     return None
 
