@@ -36,10 +36,10 @@ class WeatherSchema(BaseModel):
 
 class ThemeSchema(BaseModel):
     dark_theme_enabled: bool
-    light_background_color: str
-    light_second_color: str
-    dark_background_color: str
-    dark_second_color: str
+    light_background_color: int
+    light_second_color: int
+    dark_background_color: int
+    dark_second_color: int
 
 
 class SettingsSchema(BaseModel):
@@ -61,10 +61,10 @@ class SettingsSchema(BaseModel):
     language: str
     request_period: int
     dark_theme_enabled: bool
-    light_background_color: str
-    light_second_color: str
-    dark_background_color: str
-    dark_second_color: str
+    light_background_color: int
+    light_second_color: int
+    dark_background_color: int
+    dark_second_color: int
 
 
 class WebsocketSchema(BaseModel):

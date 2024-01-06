@@ -36,10 +36,10 @@ def get_filled_schema():
         language="en",
         request_period=3,
         dark_theme_enabled=True,
-        light_background_color="#313d341",
-        light_second_color="#97d34e",
-        dark_background_color="#effd34e",
-        dark_second_color="#32d34e",
+        light_background_color=1234455,
+        light_second_color=1234455,
+        dark_background_color=1234455,
+        dark_second_color=123445,
     )
 
 
