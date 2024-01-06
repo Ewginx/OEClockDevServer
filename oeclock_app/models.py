@@ -12,8 +12,8 @@ class Settings(Base):
     password = Column(String)
     ip_address = Column(String)
     gateway = Column(String)
-    sta_login = Column(String)
-    sta_password = Column(String)
+    ap_login = Column(String)
+    ap_password = Column(String)
 
     auto_brightness = Column(Boolean)
     auto_theme_change = Column(Boolean)

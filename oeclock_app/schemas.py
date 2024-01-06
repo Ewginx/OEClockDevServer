@@ -6,8 +6,8 @@ class WifiSchema(BaseModel):
     password: str
     ip_address: str
     gateway: str
-    sta_login: str
-    sta_password: str
+    ap_login: str
+    ap_password: str
 
 
 class BrightnessSchema(BaseModel):
@@ -47,8 +47,8 @@ class SettingsSchema(BaseModel):
     password: str
     ip_address: str
     gateway: str
-    sta_login: str
-    sta_password: str
+    ap_login: str
+    ap_password: str
     auto_brightness: bool
     auto_theme_change: bool
     threshold: int
