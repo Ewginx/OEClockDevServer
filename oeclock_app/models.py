@@ -30,10 +30,19 @@ class Settings(Base):
     request_period = Column(Integer)
 
     dark_theme_enabled = Column(Boolean)
-    light_background_color = Column(Integer)
+    light_primary_color = Column(Integer)
     light_second_color = Column(Integer)
-    dark_background_color = Column(Integer)
+    light_screen_color = Column(Integer)
+    light_card_color = Column(Integer)
+    light_text_color = Column(Integer)
+    light_grey_color = Column(Integer)
+
+    dark_primary_color = Column(Integer)
     dark_second_color = Column(Integer)
+    dark_screen_color = Column(Integer)
+    dark_card_color = Column(Integer)
+    dark_text_color = Column(Integer)
+    dark_grey_color = Column(Integer)
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

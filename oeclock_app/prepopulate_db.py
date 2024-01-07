@@ -36,10 +36,18 @@ def get_filled_schema():
         language="en",
         request_period=3,
         dark_theme_enabled=True,
-        light_background_color=1234455,
+        light_primary_color=1234455,
         light_second_color=1234455,
-        dark_background_color=1234455,
+        light_screen_color=1234455,
+        light_card_color=1234455,
+        light_text_color=1234455,
+        light_grey_color=1234455,
+        dark_primary_color=1234455,
         dark_second_color=123445,
+        dark_screen_color=123445,
+        dark_card_color=123445,
+        dark_text_color=123445,
+        dark_grey_color=123445,
     )
 
 
