@@ -22,6 +22,15 @@ class TimeSchema(BaseModel):
     digital_main_screen: bool
 
 
+class AlarmClockSchema(BaseModel):
+    weekdays_time: str
+    weekends_time: str
+    one_off_time: str
+    weekdays_enabled: bool
+    weekends_enabled: bool
+    one_off_enabled: bool
+
+
 class SetTimeSchema(BaseModel):
     time: int
 
@@ -36,7 +45,7 @@ class WeatherSchema(BaseModel):
 
 class ThemeSchema(BaseModel):
     dark_theme_enabled: bool
-    
+
     light_primary_color: int
     light_second_color: int
     light_screen_color: int
@@ -83,6 +92,13 @@ class SettingsSchema(BaseModel):
     dark_card_color: int
     dark_text_color: int
     dark_grey_color: int
+
+    weekdays_time: str
+    weekdays_enabled: bool
+    weekends_time: str
+    weekends_enabled: bool
+    one_off_time: str
+    one_off_enabled: bool
 
 
 class WebsocketSchema(BaseModel):

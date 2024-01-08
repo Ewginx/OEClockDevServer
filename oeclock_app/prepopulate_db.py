@@ -48,6 +48,12 @@ def get_filled_schema():
         dark_card_color=123445,
         dark_text_color=123445,
         dark_grey_color=123445,
+        weekdays_time="18:30",
+        weekdays_enabled=True,
+        weekends_time="18:30",
+        weekends_enabled=True,
+        one_off_time="18:30",
+        one_off_enabled=True,
     )
 
 

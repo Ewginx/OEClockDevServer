@@ -44,5 +44,12 @@ class Settings(Base):
     dark_text_color = Column(Integer)
     dark_grey_color = Column(Integer)
 
+    weekdays_time = Column(String)
+    weekdays_enabled = Column(Boolean)
+    weekends_time = Column(String)
+    weekends_enabled = Column(Boolean)
+    one_off_time = Column(String)
+    one_off_enabled = Column(Boolean)
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

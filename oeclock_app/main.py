@@ -58,6 +58,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.get("/wifi", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/brightness", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/time", status_code=status.HTTP_301_MOVED_PERMANENTLY)
+@app.get("/alarm_clock", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 def redirect():
     return RedirectResponse("/")
 
@@ -127,6 +128,14 @@ async def save_brightness_settings(
 async def save_wifi_settings(wifi_settings: schemas.WifiSchema, db: Session = Depends(get_db)):
     if updated_settings := crud.update_settings_model(db=db, settings_scheme=wifi_settings):
         logger.info(f"WiFi settings updated! New values are {updated_settings.ip_address}")
+
+
+@app.put("/settings/alarm_clock", status_code=status.HTTP_200_OK)
+async def save_alarm_clock_settings(
+    wifi_settings: schemas.AlarmClockSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=wifi_settings):
+        logger.info(f"Alarm settings updated! New values are {updated_settings.weekdays_time}")
 
 
 class MyStatics(StaticFiles):
