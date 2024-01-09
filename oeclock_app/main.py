@@ -3,12 +3,21 @@ import random
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
+from fastapi import (
+    Depends,
+    FastAPI,
+    HTTPException,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+    UploadFile,
+)
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from sqlalchemy.orm import Session
+from fastapi.encoders import jsonable_encoder
 
 from oeclock_app import crud, models, schemas
 from oeclock_app.database import SessionLocal, engine
@@ -147,6 +156,17 @@ class MyStatics(StaticFiles):
 async def get_settings(db: Session = Depends(get_db)):
     serialized_settings = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
     return JSONResponse(content=serialized_settings.model_dump_json())
+
+
+@app.post("/ota_update", status_code=status.HTTP_200_OK)
+async def load_fw(file: UploadFile):
+    logger.info(file.filename)
+    json_content = {}
+    if ".bin" in file.filename:
+        json_content = {"update": True}
+    else:
+        json_content = {"update": False}
+    return JSONResponse(content=jsonable_encoder(json_content))
 
 
 app.mount("/", MyStatics(directory="static", html=True), name="static")
