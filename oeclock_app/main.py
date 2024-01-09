@@ -7,17 +7,17 @@ from fastapi import (
     Depends,
     FastAPI,
     HTTPException,
+    UploadFile,
     WebSocket,
     WebSocketDisconnect,
     status,
-    UploadFile,
 )
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from sqlalchemy.orm import Session
-from fastapi.encoders import jsonable_encoder
 
 from oeclock_app import crud, models, schemas
 from oeclock_app.database import SessionLocal, engine
