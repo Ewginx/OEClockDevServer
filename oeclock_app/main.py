@@ -158,8 +158,21 @@ async def get_settings(db: Session = Depends(get_db)):
     return JSONResponse(content=serialized_settings.model_dump_json())
 
 
-@app.post("/ota_update", status_code=status.HTTP_200_OK)
-async def load_fw(file: UploadFile):
+@app.post("/update_fw", status_code=status.HTTP_200_OK)
+async def update_fw(file: UploadFile):
+    logger.info("Get firmware image:")
+    logger.info(file.filename)
+    json_content = {}
+    if ".bin" in file.filename:
+        json_content = {"update": True}
+    else:
+        json_content = {"update": False}
+    return JSONResponse(content=jsonable_encoder(json_content))
+
+
+@app.post("/update_fs", status_code=status.HTTP_200_OK)
+async def update_fs(file: UploadFile):
+    logger.info("Get filesystem image:")
     logger.info(file.filename)
     json_content = {}
     if ".bin" in file.filename:
