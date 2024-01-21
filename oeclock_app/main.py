@@ -182,4 +182,16 @@ async def update_fs(file: UploadFile):
     return JSONResponse(content=jsonable_encoder(json_content))
 
 
+@app.post("/weather_images_day", status_code=status.HTTP_200_OK)
+async def load_images_day(files: list[UploadFile]):
+    logger.info("Day icons upload:")
+    for fi in files:
+        logger.info(fi.filename)
+
+@app.post("/weather_images_night", status_code=status.HTTP_200_OK)
+async def load_images_night(files: list[UploadFile]):
+    logger.info("Night icons upload:")
+    for fi in files:
+        logger.info(fi.filename)
+        
 app.mount("/", MyStatics(directory="static", html=True), name="static")
