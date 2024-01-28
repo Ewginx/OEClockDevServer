@@ -51,6 +51,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 humidity=random.randint(40, 67),
                 lx=random.randint(0, 250),
                 battery_level=random.randint(15, 100),
+                max_free_block=random.randint(15, 50),
+                free_heap=random.randint(15, 100),
+                used_space=random.randint(400, 800),
             )
             await websocket.send_text(websocket_schema.model_dump_json())
             await asyncio.sleep(2)
@@ -154,7 +157,9 @@ class MyStatics(StaticFiles):
 
 @app.get("/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema)
 async def get_settings(db: Session = Depends(get_db)):
-    serialized_settings = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
+    serialized_settings = schemas.SettingsSchema(
+        **crud.get_settings_from_db_as_dict(db), fs_space=960
+    )
     return JSONResponse(content=serialized_settings.model_dump_json())
 
 
@@ -188,6 +193,7 @@ async def upload_weather_images_day(files: list[UploadFile]):
     for fi in files:
         logger.info(fi.filename)
 
+
 @app.post("/weather_images_night", status_code=status.HTTP_200_OK)
 async def upload_weather_images_night(files: list[UploadFile]):
     logger.info("Night icons upload:")
@@ -200,10 +206,12 @@ async def upload_gif(file: UploadFile):
     logger.info("GIF uploaded")
     logger.info(file.filename)
 
+
 @app.post("/frontend", status_code=status.HTTP_200_OK)
 async def upload_frontend(file: UploadFile):
     logger.info("Index.html.gz uploaded")
     logger.info(file.filename)
+
 
 @app.post("/clock_images", status_code=status.HTTP_200_OK)
 async def upload_clock_images(files: list[UploadFile]):

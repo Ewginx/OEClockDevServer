@@ -100,9 +100,14 @@ class SettingsSchema(BaseModel):
     one_off_time: str
     one_off_enabled: bool
 
+    fs_space: int
+
 
 class WebsocketSchema(BaseModel):
     temperature: float
     humidity: int
     lx: int
     battery_level: int
+    max_free_block: int
+    free_heap: int
+    used_space: int
