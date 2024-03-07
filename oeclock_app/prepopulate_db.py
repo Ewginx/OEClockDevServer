@@ -5,18 +5,18 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def create(db=Session, settings_scheme=BaseModel):
+def create(db=Session, settings_scheme=BaseModel) -> None:
     setting_db = models.Settings(**settings_scheme.model_dump())
     db.add(setting_db)
     db.commit()
     db.refresh(setting_db)
 
 
-def model_is_empty(db):
+def model_is_empty(db) -> bool:
     return False if db.query(models.Settings).first() else True
 
 
-def get_filled_schema():
+def get_filled_schema() -> schemas.SettingsSchema:
     return schemas.SettingsSchema(
         ssid="your_ssid",
         password="password1234",
@@ -54,11 +54,20 @@ def get_filled_schema():
         weekends_enabled=True,
         one_off_time="18:30",
         one_off_enabled=True,
+        rgb_enabled=True,
+        rgb_mode=1,
+        first_rgb_color=123445,
+        second_rgb_color=123445,
+        third_rgb_color=123445,
+        rgb_delay=200,
+        rgb_brightness=200,
+        rgb_night=True,
+        fs_space=960,
     )
 
 
-def prepopulate_db(db=Session):
+def prepopulate_db(db=Session) -> None:
     db = next(db)
     if model_is_empty(db):
-        create(db, get_filled_schema())
+        create(db, settings_scheme=get_filled_schema())
         logger.info("Settings table was prepopulated")

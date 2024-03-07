@@ -144,10 +144,18 @@ async def save_wifi_settings(wifi_settings: schemas.WifiSchema, db: Session = De
 
 @app.put("/settings/alarm_clock", status_code=status.HTTP_200_OK)
 async def save_alarm_clock_settings(
-    wifi_settings: schemas.AlarmClockSchema, db: Session = Depends(get_db)
+    alarm_clock_settings: schemas.AlarmClockSchema, db: Session = Depends(get_db)
 ):
-    if updated_settings := crud.update_settings_model(db=db, settings_scheme=wifi_settings):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=alarm_clock_settings):
         logger.info(f"Alarm settings updated! New values are {updated_settings.weekdays_time}")
+
+
+@app.put("/settings/rgb", status_code=status.HTTP_200_OK)
+async def save_rgb_settings(
+    rgb_settings: schemas.RGBSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=rgb_settings):
+        logger.info(f"RGB settings updated! New values are {updated_settings.rgb_mode}")
 
 
 class MyStatics(StaticFiles):
@@ -158,7 +166,7 @@ class MyStatics(StaticFiles):
 @app.get("/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema)
 async def get_settings(db: Session = Depends(get_db)):
     serialized_settings = schemas.SettingsSchema(
-        **crud.get_settings_from_db_as_dict(db), fs_space=960
+        **crud.get_settings_from_db_as_dict(db)
     )
     return JSONResponse(content=serialized_settings.model_dump_json())
 

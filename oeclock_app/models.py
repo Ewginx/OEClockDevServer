@@ -51,5 +51,16 @@ class Settings(Base):
     one_off_time = Column(String)
     one_off_enabled = Column(Boolean)
 
+    fs_space = Column(Integer)
+
+    rgb_enabled = Column(Boolean)
+    rgb_mode = Column(Integer)
+    first_rgb_color = Column(Integer)
+    second_rgb_color = Column(Integer)
+    third_rgb_color = Column(Integer)
+    rgb_delay = Column(Integer)
+    rgb_brightness = Column(Integer)
+    rgb_night = Column(Boolean)
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

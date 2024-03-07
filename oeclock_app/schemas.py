@@ -61,6 +61,17 @@ class ThemeSchema(BaseModel):
     dark_grey_color: int
 
 
+class RGBSchema(BaseModel):
+    rgb_enabled: bool
+    rgb_mode: int
+    first_rgb_color: int
+    second_rgb_color: int
+    third_rgb_color: int
+    rgb_delay: int
+    rgb_brightness: int
+    rgb_night: bool
+
+
 class SettingsSchema(BaseModel):
     ssid: str
     password: str
@@ -101,6 +112,15 @@ class SettingsSchema(BaseModel):
     one_off_enabled: bool
 
     fs_space: int
+
+    rgb_enabled: bool
+    rgb_mode: int
+    first_rgb_color: int
+    second_rgb_color: int
+    third_rgb_color: int
+    rgb_delay: int
+    rgb_brightness: int
+    rgb_night: bool
 
 
 class WebsocketSchema(BaseModel):
