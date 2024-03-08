@@ -63,7 +63,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/debug", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/ota", status_code=status.HTTP_301_MOVED_PERMANENTLY)
-@app.get("/sounds", status_code=status.HTTP_301_MOVED_PERMANENTLY)
+@app.get("/sound", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/rgb", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/weather", status_code=status.HTTP_301_MOVED_PERMANENTLY)
 @app.get("/theme", status_code=status.HTTP_301_MOVED_PERMANENTLY)
@@ -156,6 +156,14 @@ async def save_rgb_settings(
 ):
     if updated_settings := crud.update_settings_model(db=db, settings_scheme=rgb_settings):
         logger.info(f"RGB settings updated! New values are {updated_settings.rgb_mode}")
+
+
+@app.put("/settings/sound", status_code=status.HTTP_200_OK)
+async def save_sound_settings(
+    sound_settings: schemas.SoundSchema, db: Session = Depends(get_db)
+):
+    if updated_settings := crud.update_settings_model(db=db, settings_scheme=sound_settings):
+        logger.info(f"Sound settings updated! New values are {updated_settings.volume_level}")
 
 
 class MyStatics(StaticFiles):

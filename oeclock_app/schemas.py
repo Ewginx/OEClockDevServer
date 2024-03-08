@@ -72,6 +72,16 @@ class RGBSchema(BaseModel):
     rgb_night: bool
 
 
+class SoundSchema(BaseModel):
+    sound_on: bool
+    ee_sound_on: bool
+    plug_sound_on: bool
+    volume_level: int
+    alarm_track: int
+    ee_track: int
+    plug_track: int
+
+
 class SettingsSchema(BaseModel):
     ssid: str
     password: str
@@ -121,6 +131,14 @@ class SettingsSchema(BaseModel):
     rgb_delay: int
     rgb_brightness: int
     rgb_night: bool
+
+    sound_on: bool
+    ee_sound_on: bool
+    plug_sound_on: bool
+    volume_level: int
+    alarm_track: int
+    ee_track: int
+    plug_track: int
 
 
 class WebsocketSchema(BaseModel):

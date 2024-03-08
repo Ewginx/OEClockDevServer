@@ -62,6 +62,13 @@ def get_filled_schema() -> schemas.SettingsSchema:
         rgb_delay=200,
         rgb_brightness=200,
         rgb_night=True,
+        sound_on=True,
+        ee_sound_on=True,
+        plug_sound_on=True,
+        volume_level=15,
+        alarm_track=1,
+        ee_track=2,
+        plug_track=3,
         fs_space=960,
     )
 
