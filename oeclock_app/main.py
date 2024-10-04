@@ -13,6 +13,7 @@ from fastapi import (
     status,
 )
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
@@ -26,6 +27,19 @@ from oeclock_app.prepopulate_db import prepopulate_db
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 security = HTTPBasic()
 
@@ -77,7 +91,7 @@ def redirect():
 
 @app.get("/")
 def read_current_user(credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
-    if credentials.username == "admin" and credentials.password == "admin1234":
+    if credentials.username == "OEClock" and credentials.password == "admin1234":
         return FileResponse("static/index.html")
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -151,17 +165,13 @@ async def save_alarm_clock_settings(
 
 
 @app.put("/settings/rgb", status_code=status.HTTP_200_OK)
-async def save_rgb_settings(
-    rgb_settings: schemas.RGBSchema, db: Session = Depends(get_db)
-):
+async def save_rgb_settings(rgb_settings: schemas.RGBSchema, db: Session = Depends(get_db)):
     if updated_settings := crud.update_settings_model(db=db, settings_scheme=rgb_settings):
         logger.info(f"RGB settings updated! New values are {updated_settings.rgb_mode}")
 
 
 @app.put("/settings/sound", status_code=status.HTTP_200_OK)
-async def save_sound_settings(
-    sound_settings: schemas.SoundSchema, db: Session = Depends(get_db)
-):
+async def save_sound_settings(sound_settings: schemas.SoundSchema, db: Session = Depends(get_db)):
     if updated_settings := crud.update_settings_model(db=db, settings_scheme=sound_settings):
         logger.info(f"Sound settings updated! New values are {updated_settings.volume_level}")
 
@@ -173,10 +183,8 @@ class MyStatics(StaticFiles):
 
 @app.get("/settings", status_code=status.HTTP_200_OK, response_model=schemas.SettingsSchema)
 async def get_settings(db: Session = Depends(get_db)):
-    serialized_settings = schemas.SettingsSchema(
-        **crud.get_settings_from_db_as_dict(db)
-    )
-    return JSONResponse(content=serialized_settings.model_dump_json())
+    serialized_settings = schemas.SettingsSchema(**crud.get_settings_from_db_as_dict(db))
+    return JSONResponse(content=serialized_settings.model_dump())
 
 
 @app.post("/update_fw", status_code=status.HTTP_200_OK)
